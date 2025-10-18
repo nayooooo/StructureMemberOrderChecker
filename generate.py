@@ -262,8 +262,12 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
+    if args.method not in ['linera', 'recur']:
+        raise ValueError('method must be linera or recur!')
     use_recur = True if args.method == 'recur' else False
     debug = True if args.debug.upper() in ['YES', 'Y'] else False
 
     gen = GenerateStructureMemberOrderChecker(member_max=args.member_max, use_recur=use_recur, error_msg=args.error, debug=debug, system=args.system)
+    print('generate checker param:')
+    print(args)
     gen.generate(args.save)

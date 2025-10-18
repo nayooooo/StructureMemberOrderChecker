@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "../../StructureMemberOrderChecker.h"
 
 typedef struct
@@ -13,7 +12,5 @@ SMOCHKER(test_t, a, b, c, d);
 
 int main()
 {
-    printf("hello checker\n");
-
     return 0;
 }

@@ -1,1 +1,0 @@
-python .\generate.py --system=64
