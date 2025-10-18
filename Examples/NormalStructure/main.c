@@ -9,7 +9,7 @@ typedef struct
     int d;
 } test_t;
 
-SMOCHKER(test_t, test_t_order_is_error, a, b, c, d);
+SMOCHKER(test_t, a, b, c, d);
 
 int main()
 {

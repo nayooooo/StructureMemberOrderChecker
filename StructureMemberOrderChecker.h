@@ -4,6 +4,10 @@
 #define SMOCHKER_MEMBER_MAX            10
 #define SMOCHKER_USE_RECUR             0
 
+#if (SMOCHKER_MEMBER_MAX < 2)
+#error "SMOCHKER_MEMBER_MAX must large than 2 !"
+#endif
+
 #ifndef SMOCHKER_SIZE_T
 #ifdef size_t
 typedef size_t SMOCHKER_SIZE_T;
@@ -50,36 +54,36 @@ typedef unsigned int SMOCHKER_SIZE_T;
 
 #else
 
-#define _SMOCHKER_CHECK0(_struct) 1
+#define _SMOCHKER_CHECK0(_struct) 0
 
 #define _SMOCHKER_CHECK1(_struct, _current) 1
 
-#define _SMOCHKER_CHECK2(_struct, _current, _next) \
+#define _SMOCHKER_CHECK2(_struct, _current, _next, ...) \
     _SMOCHKER_PAIR(_struct, _current, _next)
 
 #define _SMOCHKER_CHECK3(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK2(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK2(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK4(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK3(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK3(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK5(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK4(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK4(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK6(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK5(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK5(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK7(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK6(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK6(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK8(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK7(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK7(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK9(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK8(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK8(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_CHECK10(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK9(_struct, _next, __VA_ARGS__))
+    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK9(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_NEXT_SELECT(_struct,             \
                               _1, _2, _3, _4, _5,  \
@@ -95,11 +99,13 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #endif
 
 #ifdef _Static_assert
-#define SMOCHKER(_struct, msg, ...) \
-    _Static_assert(_SMOCHKER_IMPL(_struct, __VA_ARGS__), #msg)
+#define SMOCHKER_MSG(_struct, msg, ...) \
+    _Static_assert(_SMOCHKER_IMPL(_struct, ##__VA_ARGS__), #msg)
 #else
-#define SMOCHKER(_struct, msg, ...) \
-    typedef int __compile_time_assert_##msg[_SMOCHKER_IMPL(_struct, __VA_ARGS__) ? 1 : -1];
+#define SMOCHKER_MSG(_struct, msg, ...) \
+    typedef int __compile_time_assert_##msg[_SMOCHKER_IMPL(_struct, ##__VA_ARGS__) ? 1 : -1];
 #endif  /* _Static_assert */
+
+#define SMOCHKER(_struct, ...) SMOCHKER_MSG(_struct, _struct##_order_is_error, ##__VA_ARGS__)
 
 #endif  // !__STRUCTUREMEMBERORDERCHECKER_H__
