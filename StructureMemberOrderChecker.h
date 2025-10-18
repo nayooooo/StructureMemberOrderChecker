@@ -1,3 +1,26 @@
+/*==================================================
+MIT License
+
+Copyright (c) 2025 nayooooo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+==================================================*/
 #ifndef __STRUCTUREMEMBERORDERCHECKER_H__
 #define __STRUCTUREMEMBERORDERCHECKER_H__
 
@@ -5,7 +28,7 @@
 #define SMOCHKER_USE_RECUR             0
 
 #if (SMOCHKER_MEMBER_MAX < 2)
-#error "SMOCHKER_MEMBER_MAX must large than 2 !"
+#error "SMOCHKER_MEMBER_MAX must large than 2!"
 #endif
 
 #ifndef SMOCHKER_SIZE_T
@@ -25,34 +48,11 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #endif  /* offsetof */
 #endif  /* SMOCHKER_OFFSETOF */
 
-#define _SMOCHKER_PAIR(_struct, _first, _second) \
-    (SMOCHKER_OFFSETOF(_struct, _first) < SMOCHKER_OFFSETOF(_struct, _second))
+#define _SMOCHKER_PAIR(_struct, _first, _second)     (SMOCHKER_OFFSETOF(_struct, _first) < SMOCHKER_OFFSETOF(_struct, _second))
 
 #ifdef SMOCHKER
 #error "SMOCHKER is defined!"
 #endif  /* SMOCHKER */
-
-#if SMOCHKER_USE_RECUR
-
-#define _SMOCHKER_NEXT_SELECT(_struct,             \
-                              _1, _2, _3, _4, _5,  \
-                              _6, _7, _8, _9, _10, \
-                              NAME, ...) _SMOCHKER_NEXT##NAME
-
-#define _SMOCHKER_NEXT(_struct, _current, ...)                    \
-    _SMOCHKER_NEXT_SELECT(_struct, ##__VA_ARGS__,                 \
-                          _RECUR, _RECUR, _RECUR, _RECUR, _RECUR, \
-                          _RECUR, _RECUR, _RECUR, _RECUR, _RECUR, \
-                          _END)(_struct, _current, ##__VA_ARGS__)
-
-#define _SMOCHKER_NEXT_RECUR(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_NEXT(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_NEXT_END(_struct, _current) 1
-
-#define _SMOCHKER_IMPL _SMOCHKER_NEXT_RECUR
-
-#else
 
 #define _SMOCHKER_CHECK0(_struct) 0
 
@@ -87,16 +87,13 @@ typedef unsigned int SMOCHKER_SIZE_T;
 
 #define _SMOCHKER_NEXT_SELECT(_struct,             \
                               _1, _2, _3, _4, _5,  \
-                              _6, _7, _8, _9, _10, \
+                              _6, _7, _8, _9, _10,  \
                               NAME, ...) _SMOCHKER_CHECK##NAME
-
 #define _SMOCHKER_IMPL(_struct, ...) \
     _SMOCHKER_NEXT_SELECT(_struct, ##__VA_ARGS__, \
                           10, 9, 8, 7, 6,         \
-                           5, 4, 3, 2, 1,         \
-                           0)(_struct, ##__VA_ARGS__)
-
-#endif
+                          5, 4, 3, 2, 1,         \
+                          0)(_struct, ##__VA_ARGS__)
 
 #ifdef _Static_assert
 #define SMOCHKER_MSG(_struct, msg, ...) \
@@ -106,6 +103,6 @@ typedef unsigned int SMOCHKER_SIZE_T;
     typedef int __compile_time_assert_##msg[_SMOCHKER_IMPL(_struct, ##__VA_ARGS__) ? 1 : -1];
 #endif  /* _Static_assert */
 
-#define SMOCHKER(_struct, ...) SMOCHKER_MSG(_struct, _struct##_order_is_error, ##__VA_ARGS__)
+#define SMOCHKER(_struct, ...) SMOCHKER_MSG(_struct, _struct##_##order_is_error, ##__VA_ARGS__)
 
 #endif  // !__STRUCTUREMEMBERORDERCHECKER_H__
