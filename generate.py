@@ -2,8 +2,9 @@ import argparse
 
 
 class GenerateStructureMemberOrderChecker:
-    def __init__(self, member_max=10, use_recur=False, error_msg='order_is_error', debug=False):
+    def __init__(self, member_max=10, use_recur=False, error_msg='order_is_error', debug=False, system=32):
         self.DEBUG = debug
+        self.SYSTEM = system
         self.configure(member_max, use_recur, error_msg)
 
     def configure(self, member_max, use_recur, error_msg):
@@ -41,8 +42,14 @@ class GenerateStructureMemberOrderChecker:
         head += f'''#ifndef __STRUCTUREMEMBERORDERCHECKER_H__
 #define __STRUCTUREMEMBERORDERCHECKER_H__
 
-#define SMOCHKER_MEMBER_MAX            10
-#define SMOCHKER_USE_RECUR             0
+#define SMOCHKER_MEMBER_MAX            10'''
+        if self.SMOCHKER_USE_RECUR:
+            head += f'''
+#define SMOCHKER_USE_RECUR             1'''
+        else:
+            head += f'''
+#define SMOCHKER_USE_RECUR             0'''
+        head += f'''
 
 #if (SMOCHKER_MEMBER_MAX < 2)
 #error "SMOCHKER_MEMBER_MAX must large than 2!"
@@ -59,9 +66,16 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #ifndef SMOCHKER_OFFSETOF
 #ifdef offsetof
 #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)offsetof(_struct, _member))
-#else
+#else'''
+        if self.SYSTEM == 64:
+            head += f'''
 // #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
-#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))
+#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))'''
+        else:
+            head += f'''
+#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
+// #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))'''
+        head += f'''
 #endif  /* offsetof */
 #endif  /* SMOCHKER_OFFSETOF */
 
@@ -201,6 +215,7 @@ if __name__ == '__main__':
     %(porg)s --method=linera or recur       # 设置检查方法为linera或recur
     %(porg)s --error=order_is_error         # 设置报错信息为order_is_error
     %(porg)s --debug=false                  # 设置调试输出为false
+    %(porg)s --system=64                    # 设置系统位数为64位
 '''.encode('utf-8')
     )
     
@@ -239,9 +254,16 @@ if __name__ == '__main__':
         help='设置是否调试输出（默认为false）'.encode('utf-8')
     )
 
+    parser.add_argument(
+        '--system',
+        type=int,
+        default=32,
+        help='设置系统位数（默认为32）'.encode('utf-8')
+    )
+
     args = parser.parse_args()
     use_recur = True if args.method == 'recur' else False
     debug = True if args.debug.upper() in ['YES', 'Y'] else False
 
-    gen = GenerateStructureMemberOrderChecker(member_max=args.member_max, use_recur=use_recur, error_msg=args.error, debug=debug)
+    gen = GenerateStructureMemberOrderChecker(member_max=args.member_max, use_recur=use_recur, error_msg=args.error, debug=debug, system=args.system)
     gen.generate(args.save)
