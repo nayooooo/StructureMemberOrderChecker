@@ -43,8 +43,8 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #ifdef offsetof
 #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)offsetof(_struct, _member))
 #else
-// #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
-#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))
+#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
+// #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))
 #endif  /* offsetof */
 #endif  /* SMOCHKER_OFFSETOF */
 
@@ -55,40 +55,22 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #endif  /* SMOCHKER */
 
 #define _SMOCHKER_CHECK0(_struct) 0
-
 #define _SMOCHKER_CHECK1(_struct, _current) 1
-
-#define _SMOCHKER_CHECK2(_struct, _current, _next, ...) \
-    _SMOCHKER_PAIR(_struct, _current, _next)
-
-#define _SMOCHKER_CHECK3(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK2(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK4(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK3(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK5(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK4(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK6(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK5(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK7(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK6(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK8(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK7(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK9(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK8(_struct, _next, ##__VA_ARGS__))
-
-#define _SMOCHKER_CHECK10(_struct, _current, _next, ...) \
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK9(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK2(_struct, _current, _next, ...) _SMOCHKER_PAIR(_struct, _current, _next)
+#define _SMOCHKER_CHECK3(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK2(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK4(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK3(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK5(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK4(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK6(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK5(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK7(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK6(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK8(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK7(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK9(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK8(_struct, _next, ##__VA_ARGS__))
+#define _SMOCHKER_CHECK10(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK9(_struct, _next, ##__VA_ARGS__))
 
 #define _SMOCHKER_NEXT_SELECT(_struct,             \
                               _1, _2, _3, _4, _5,  \
                               _6, _7, _8, _9, _10,  \
                               NAME, ...) _SMOCHKER_CHECK##NAME
+
 #define _SMOCHKER_IMPL(_struct, ...) \
     _SMOCHKER_NEXT_SELECT(_struct, ##__VA_ARGS__, \
                           10, 9, 8, 7, 6,         \

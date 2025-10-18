@@ -134,17 +134,12 @@ typedef unsigned int SMOCHKER_SIZE_T;
         # _SMOCHKER_CHECKn
         method += f'''
 #define _SMOCHKER_CHECK0(_struct) 0
-
 #define _SMOCHKER_CHECK1(_struct, _current) 1
-
-#define _SMOCHKER_CHECK2(_struct, _current, _next, ...) \\
-    _SMOCHKER_PAIR(_struct, _current, _next)'''
+#define _SMOCHKER_CHECK2(_struct, _current, _next, ...) _SMOCHKER_PAIR(_struct, _current, _next)'''
         if self.SMOCHKER_MEMBER_MAX > 2:
             for n in range(3, self.SMOCHKER_MEMBER_MAX + 1):
                 method += f'''
-
-#define _SMOCHKER_CHECK{n}(_struct, _current, _next, ...) \\
-    (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK{n-1}(_struct, _next, ##__VA_ARGS__))'''
+#define _SMOCHKER_CHECK{n}(_struct, _current, _next, ...) (_SMOCHKER_PAIR(_struct, _current, _next) && _SMOCHKER_CHECK{n-1}(_struct, _next, ##__VA_ARGS__))'''
 
         # _SMOCHKER_NEXT_SELECT        
         method += f'''
@@ -164,7 +159,8 @@ typedef unsigned int SMOCHKER_SIZE_T;
         method += f'''NAME, ...) _SMOCHKER_CHECK##NAME
 '''
         # _SMOCHKER_IMPL
-        method += f'''#define _SMOCHKER_IMPL(_struct, ...) \\
+        method += f'''
+#define _SMOCHKER_IMPL(_struct, ...) \\
     _SMOCHKER_NEXT_SELECT(_struct, ##__VA_ARGS__, \\
                          '''
         for n in range(self.SMOCHKER_MEMBER_MAX, 0, -1):
@@ -266,6 +262,15 @@ if __name__ == '__main__':
         raise ValueError('method must be linera or recur!')
     use_recur = True if args.method == 'recur' else False
     debug = True if args.debug.upper() in ['YES', 'Y'] else False
+
+    if args.member_max >= 100:
+        print('are you sure?')
+        print('if yes, input string: yes, i\'m sure [your member_max]!')
+        print('if member_max is 100, you need input: yes, i\'m sure 100!')
+        print('and then input an enter')
+        commitment = input()
+        if commitment != f'yes, i\'m sure {args.member_max}!':
+            raise ValueError('your input string is not able!')
 
     gen = GenerateStructureMemberOrderChecker(member_max=args.member_max, use_recur=use_recur, error_msg=args.error, debug=debug, system=args.system)
     print('generate checker param:')
