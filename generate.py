@@ -42,7 +42,7 @@ class GenerateStructureMemberOrderChecker:
         head += f'''#ifndef __STRUCTUREMEMBERORDERCHECKER_H__
 #define __STRUCTUREMEMBERORDERCHECKER_H__
 
-#define SMOCHKER_MEMBER_MAX            10'''
+#define SMOCHKER_MEMBER_MAX            {self.SMOCHKER_MEMBER_MAX}'''
         if self.SMOCHKER_USE_RECUR:
             head += f'''
 #define SMOCHKER_USE_RECUR             1'''
@@ -69,12 +69,10 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #else'''
         if self.SYSTEM == 64:
             head += f'''
-// #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
 #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))'''
         else:
             head += f'''
-#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
-// #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))'''
+#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))'''
         head += f'''
 #endif  /* offsetof */
 #endif  /* SMOCHKER_OFFSETOF */

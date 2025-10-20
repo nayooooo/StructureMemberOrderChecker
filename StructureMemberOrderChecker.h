@@ -43,8 +43,7 @@ typedef unsigned int SMOCHKER_SIZE_T;
 #ifdef offsetof
 #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)offsetof(_struct, _member))
 #else
-#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((int)(&((_struct *)0)->_member)))
-// #define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))
+#define SMOCHKER_OFFSETOF(_struct, _member) ((SMOCHKER_SIZE_T)((long long)(&((_struct *)0)->_member)))
 #endif  /* offsetof */
 #endif  /* SMOCHKER_OFFSETOF */
 
